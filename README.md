@@ -1,1 +1,2 @@
-#DeepThoughts
+# DeepThoughts
+python main.py
