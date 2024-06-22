@@ -2,7 +2,7 @@
 Author: Xiawenlong-bug 2473833028@qq.com
 Date: 2024-06-21 16:06:35
 LastEditors: Xiawenlong-bug 2473833028@qq.com
-LastEditTime: 2024-06-21 18:52:42
+LastEditTime: 2024-06-22 18:04:39
 FilePath: /deep_thoughts/LeNet5_Number/recognizer.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -61,11 +61,19 @@ class Recognizer(object):
             print('Train: model file exists, skip training.')
             print('Train: loading model state from file [%s] ...' % self.model_path)
             self.model.load_state_dict(torch.load(self.model_path,map_location='cpu'))
+            #用于从状态字典中加载模型的参数（权重和偏置）。状态字典是一个简单的Python字典对象，它将每一层映射到其参数张量。
             return
         
         criterion=nn.CrossEntropyLoss(reduction='sum')
-        optimizer=torch.optim.Adam(self.model.parameters(),lr=1e-4,betas=(0.9,0.99))
+        #损失函数
+        #nn.CrossEntropyLoss 是PyTorch中用于多分类问题的损失函数。它结合了nn.LogSoftmax和nn.NLLLoss在单个类中，使得计算更加高效。
+        #reduction='sum': 这指定了如何减少（或聚合）批次中所有样本的损失。
+        #设置为 'sum' 意味着所有样本的损失将被加在一起，返回一个单一的损失值。其他常见的选项有 'mean'（返回损失的平均值）和 'none'（返回每个样本的损失，不进行任何聚合）。
 
+        optimizer=torch.optim.Adam(self.model.parameters(),lr=1e-4,betas=(0.9,0.99))
+        # self.model.parameters(): 这是一个生成器，它产生模型（self.model）中所有可训练参数的迭代器。这些参数是优化器需要调整以最小化损失函数的权重和偏置。
+        # lr=1e-4: 这是学习率，一个超参数，它决定了参数更新的步长。较高的学习率可能导致训练过程不稳定，而较低的学习率可能导致训练过程非常缓慢或陷入局部最小值。
+        # betas=(0.9, 0.99): 这是Adam优化器中的两个超参数，分别控制梯度的一阶矩估计和二阶矩估计的指数衰减率。这两个参数对于Adam优化器的性能至关重要，但通常不需要进行微调，除非你有明确的理由这样做。
         idx=0
         is_stop=False
         best_loss=float('inf')
@@ -75,6 +83,9 @@ class Recognizer(object):
 
         print('Train: start training')
         self.model.train()
+        #调用模型的train()方法会将模型设置为训练模式。在某些层（如BatchNorm或Dropout）中，训练模式和评估模式（通过eval()方法设置）的行为是不同的。
+
+
 
         for epoch in range(self.epoch):
             for i,(x,y) in enumerate(self.train_loader):#enumerate是Python的一个内置函数，它用于在迭代过程中同时获取元素的索引和值。
@@ -83,11 +94,14 @@ class Recognizer(object):
                     x=x.cuda()
                     y=y.cuda()
                 optimizer.zero_grad()
+                # 在开始反向传播之前，我们需要确保优化器的梯度被清零。这是因为PyTorch会累积梯度，所以如果不清零，下一个批次的梯度会与前一个批次的梯度相加，导致不正确的结果。
                 out=self.model(x)
                 loss=criterion(out,y)
                 loss.backward()
+                # 调用loss.backward()来执行反向传播，计算模型中所有参数的梯度。
+                # 当你调用 loss.backward() 时，PyTorch 会从损失节点开始，反向遍历这个计算图，并使用链式法则自动计算每个参数关于损失函数的梯度。这些梯度随后被用来更新模型的参数，通常是通过优化器（如 Adam）的 step() 方法。
                 optimizer.step()
-
+                # 最后，使用优化器（这里是Adam优化器）的step()方法来根据计算出的梯度更新模型的参数。
                 if idx%100==0:
                     print('Train: epoch [%d/%d], batch [%d/%d], loss %.4f' % (epoch,self.epoch,i,len(self.train_loader),loss.item()))
                     y=y.cpu()
