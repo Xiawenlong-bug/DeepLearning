@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 /LeNet5_Number/data/**
 /LeNet5_Number/output/
+*.pdf
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

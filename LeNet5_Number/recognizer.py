@@ -2,7 +2,7 @@
 Author: Xiawenlong-bug 2473833028@qq.com
 Date: 2024-06-21 16:06:35
 LastEditors: Xiawenlong-bug 2473833028@qq.com
-LastEditTime: 2024-06-22 18:04:39
+LastEditTime: 2024-06-23 22:51:06
 FilePath: /deep_thoughts/LeNet5_Number/recognizer.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -119,7 +119,7 @@ class Recognizer(object):
                     msg = 'Train [Epoch {:>3}]: \tTrain Loss: {:7.3f}\t' + \
                           'Train Acc: {:>5.2%}\t' + \
                           'Eval Loss: {:7.3f}\tEval Acc: {:>5.2%}{}'
-                    print(msg.format(epoch+1, loss.item(),
+                    print(msg.format(epoch+1, loss.item(), 
                                      acc, eval_loss, eval_acc, suffix))
                     # 如果超过连续 1000 个批次没有优化，则结束训练
                     if idx - best_batch_idx > 1000:
