@@ -2,7 +2,7 @@
 Author: Xiawenlong-bug 2473833028@qq.com
 Date: 2024-06-21 16:06:35
 LastEditors: Xiawenlong-bug 2473833028@qq.com
-LastEditTime: 2024-06-23 22:51:06
+LastEditTime: 2024-06-26 21:34:52
 FilePath: /deep_thoughts/LeNet5_Number/recognizer.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -29,6 +29,7 @@ class Recognizer(object):
         self.test_loader=None
         self.model=None
         self.output_dir='output/'
+        self.device="cuda" if torch.cuda.is_available() else "cpu"
 
         name='lenet5'
         if halve_conv_kernels:
@@ -60,7 +61,7 @@ class Recognizer(object):
         if os.path.exists(self.model_path):
             print('Train: model file exists, skip training.')
             print('Train: loading model state from file [%s] ...' % self.model_path)
-            self.model.load_state_dict(torch.load(self.model_path,map_location='cpu'))
+            self.model.load_state_dict(torch.load(self.model_path)).to_device(self.device)
             #用于从状态字典中加载模型的参数（权重和偏置）。状态字典是一个简单的Python字典对象，它将每一层映射到其参数张量。
             return
         
