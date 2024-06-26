@@ -1,0 +1,9 @@
+#pipreqs . --force 自动配置项目中使用到的安装包
+#pip install -r requirements.txt
+numpy==1.23.5
+pandas==2.0.3
+scikit_learn==1.4.2
+torch==2.1.0
+torch==1.13.0
+torchvision==0.16.0
+tqdm==4.66.4

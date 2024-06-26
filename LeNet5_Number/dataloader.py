@@ -36,8 +36,6 @@ def load_data(data_dir,image_file,label_file,batch_size=128):
     return train_loader
 
 
-    return train_loader
-
 def show_image(image,label):
     plt.imshow(image,cmap='gray')
     plt.title(label)
